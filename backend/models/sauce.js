@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const sauceSchema = mongoose.Schema({
     userId : {type: String, required: true},
@@ -14,4 +14,5 @@ const sauceSchema = mongoose.Schema({
     usersDisiked : {type: [ "String <userId>" ], required: false},
 })
 
-module.exports = mongoose.model('sauce', sauceSchema);
+// module.exports = mongoose.model('sauce', sauceSchema);
+export default sauceSchema;

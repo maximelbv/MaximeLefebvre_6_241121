@@ -1,9 +1,13 @@
-const express = require('express');
-const mongoose = require('mongoose');
+import express from 'express';
+import * as midd from './controllers/middlewares.js';
+import mongoose from 'mongoose';
+import sauce from './models/sauce.js';
+import user from './models/user.js';
+
+
 const app = express();
 
-const sauce = require('./models/sauce');
-const user = require('./models/user');
+
 
 // connexion à la DB
 mongoose.connect('mongodb+srv://Maximelbv:azer@piiquante.s8orz.mongodb.net/Piiquante?retryWrites=true&w=majority',
@@ -23,37 +27,44 @@ app.use((req, res, next) => {
     next();
   });
 
-app.post('/api/auth/signup', (req, res, next) => {
-    const newUser = new user({
-        ...req.body
-        // hash du password
-    })
-    newUser.save()
-    .then(() => res.status(201).json({message: 'Le compte a bien été créé'}))
-    .catch(() => res.status(400).json({error}))
-});
+// CRUD middlewares (Create, Read, Update, Delete)
+
+app.post('/api/auth/signup', midd.signupPost);
 
 app.post('/api/auth/login', (req, res, next) => {
     // utiliser 'newuser.find()' ? 
-    // si la req match un user: renvoie son id et un 'token web JSON' (??)
+    // si la req match un user: renvoie son id et un 'token web JSON' (?)
 });
 
-app.use('/api/sauces', (req, res) => {
-    // renvoie un tableau de toutes les sauces depuis la DB
+app.get('/api/sauces', (req, res, next) => {
+    sauce.find()
+    .then(sauces => res.status(200).json(sauces))
+    .catch(error => res.status(400).json({error}));
 });
 
-app.use('/api/sauces/:id', (req, res, next) => {
-    // renvoie la sauce avec l'id fourni
+app.get('/api/sauces/:id', (req, res, next) => {
+    sauce.findOne({id: req.params.id})
+    .then(specSauce => res.status(200).json(specSauce))
+    .catch(error => res.status(404).json({error}));
 });
 
 // app.post('/api/sauces', (req, res, next) => {});
 
-// app.post('/api/sauces/:id', (req, res, next) => {}); // post ou put ?
+app.put('/api/sauces/:id', (req, res, next) => {
+    // revoir updateOne method
+    sauce.updateOne({id: req.params.id}, {...req.body, id: req.params.id})
+    .then(() => res.status(200).json({message: 'sauce modifiée'}))
+    .catch(error => res.status(404).json({error}));
+});
 
-// app.delete('/api/sauces/:id', (req, res, next) => {});
+app.delete('/api/sauces/:id', (req, res, next) => {
+    sauce.deleteOne({id: req.params.id})
+    .then(() => res.status(200).json({message: 'sauce supprimée'}))
+    .catch(error => res.status(404).json({error}));
+});
 
 // app.post('/api/sauces/:id/like',( req, res) => {});
 
 
 
-module.exports = app; 
+export default app; 
