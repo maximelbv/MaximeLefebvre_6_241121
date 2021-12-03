@@ -12,7 +12,7 @@ const sauceSchema = mongoose.Schema({
     dislikes : {type: Number, required: false},
     usersLiked : {type: [ "String <userId>" ], required: false},
     usersDisiked : {type: [ "String <userId>" ], required: false},
-})
+});
 
 // module.exports = mongoose.model('sauce', sauceSchema);
 export default sauceSchema;
