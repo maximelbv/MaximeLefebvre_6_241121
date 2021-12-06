@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 // import saucesRoutes from './routes/sauces';
 
 import * as authControllers from './controllers/auth.js';
-// nodemon se
+import * as saucesControllers from './controllers/sauces.js';
 
 // import sauce from './models/sauce.js';
 // import user from './models/user.js';
@@ -36,17 +36,17 @@ app.use(express.json());
 
 app.post('/api/auth/signup', authControllers.signupPost);
 
-// app.post('/api/auth/login', authControllers.loginPost);
+app.post('/api/auth/login', authControllers.loginPost);
 
-// app.get('/api/sauces', saucesControllers.getAllSauces);
+app.get('/api/sauces', saucesControllers.getAllSauces);
 
-// app.get('/api/sauces/:id', saucesControllers.getSauce);
+app.get('/api/sauces/:id', saucesControllers.getSauce);
 
-// app.post('/api/sauces', saucesControllers.postSauce);
+app.post('/api/sauces', saucesControllers.postSauce);
 
-// app.put('/api/sauces/:id', saucesControllers.modifySauce);
+app.put('/api/sauces/:id', saucesControllers.modifySauce);
 
-// app.delete('/api/sauces/:id', saucesControllers.deleteSauce);
+app.delete('/api/sauces/:id', saucesControllers.deleteSauce);
 
 // app.post('/api/sauces/:id/like',saucesControllers.likeSauce);
 
