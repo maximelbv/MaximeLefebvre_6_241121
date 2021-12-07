@@ -1,6 +1,6 @@
 import sauce from '../models/sauce.js';
+
 // fonctionne
-// afficher message d'erreur dans le DOM? 
 export function getAllSauces(req, res) {
     sauce.find()
     .then(sauces => res.status(200).json(sauces))
