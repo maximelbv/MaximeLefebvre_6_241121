@@ -14,7 +14,6 @@ mongoose.connect('mongodb+srv://Maximelbv:azer@piiquante.s8orz.mongodb.net/Piiqu
 
 // CORS middleware (Cross-origin resource sharing)
 // autorise la compatibilité entre les ports
-// a mettre dans config.js
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -22,7 +21,6 @@ app.use((req, res, next) => {
     next();
   });
 
-// regarder a quoi ça sert
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
