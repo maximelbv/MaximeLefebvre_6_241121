@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import path from 'path';
 
 import authRoutes from './routes/auth.js';
 import saucesRoutes from './routes/sauces.js';
@@ -22,6 +23,8 @@ app.use((req, res, next) => {
   });
 
 app.use(express.json());
+
+app.use('/images', express.static(path.join('images')));
 
 app.use('/api/auth', authRoutes);
 

@@ -6,13 +6,13 @@ import multerConfig from '../config/multerConfig.js';
 
 
 
-router.get('/', saucesControllers.getAllSauces);
+router.get('/', auth, saucesControllers.getAllSauces);
 
-router.get('/:id', saucesControllers.getSauce);
+router.get('/:id', auth, saucesControllers.getSauce);
 
-router.post('/',multerConfig , saucesControllers.postSauce);
+router.post('/', auth, multerConfig , saucesControllers.postSauce);
 
-router.put('/:id', saucesControllers.modifySauce);
+router.put('/:id', auth, multerConfig, saucesControllers.modifySauce);
 
 router.delete('/:id', auth, saucesControllers.deleteSauce);
 
