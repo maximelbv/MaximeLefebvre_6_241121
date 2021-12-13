@@ -9,12 +9,9 @@ import { validationResult } from 'express-validator';
 
 export function signupPost(req, res) {
     
-    // if(!req.body || !req.body.password || !req.body.email) {
-    //     return error
-    // }
-
     const errors = validationResult(req);
-    console.log(errors);
+    console.log(errors)
+    
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })
     } else {
