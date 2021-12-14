@@ -1,5 +1,6 @@
 import sauce from '../models/sauce.js';
 import fs from 'fs';
+import { validationResult } from 'express-validator';
 
 export function getAllSauces(req, res) {
     return sauce.find()
@@ -16,16 +17,25 @@ export function getSauce(req, res) {
 };
 
 export function postSauce(req, res) {
-    const sauceObject = JSON.parse(req.body.sauce);
-    const newSauce = new sauce({
-        ...sauceObject,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` 
-    })
-    console.log(`${req.protocol}://${req.get('host')}/images/${req.file.filename}`);
-    return newSauce.save()
-        .then(() => res.status(201).json({message: 'La sauce a bien été créée'}))
-        .catch((err) => res.status(400).json({ error: err }))
-    ;
+    // const errors = validationResult(req);
+    // console.log(errors)
+
+    // if (!errors.isEmpty()) {
+    //     return res.status(400).json({ errors: errors.array() })
+    // } else {
+        const sauceObject = JSON.parse(req.body.sauce);
+        console.log(sauceObject)
+        const newSauce = new sauce({
+            ...sauceObject,
+            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` 
+        })
+        console.log(`${req.protocol}://${req.get('host')}/images/${req.file.filename}`);
+        return newSauce.save()
+            .then(() => res.status(201).json({message: 'La sauce a bien été créée'}))
+            .catch((err) => res.status(400).json({ error: err }))
+        ;
+    // }
+
 };
 
 export function modifySauce(req, res) {
@@ -44,7 +54,7 @@ export function modifySauce(req, res) {
 export function deleteSauce(req, res) {
     sauce.findOne({ _id: req.params._id })
         .then(sauce => {
-            
+
             const filename = sauce.imageUrl.split('/images/')[1];
 
             fs.unlink(`images/${filename}`, () => {

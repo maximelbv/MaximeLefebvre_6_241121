@@ -1,17 +1,13 @@
 // user model
 import user from '../models/auth.js';
-// password hash library
 import bcrypt from 'bcrypt';
-// JSON web token library
 import jwt from 'jsonwebtoken';
-
 import { validationResult } from 'express-validator';
 
 export function signupPost(req, res) {
-    
     const errors = validationResult(req);
     console.log(errors)
-    
+
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })
     } else {
