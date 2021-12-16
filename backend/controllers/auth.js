@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator';
 
 export function signupPost(req, res) {
+    console.log('auth body', req.body);
     const errors = validationResult(req);
     console.log(errors)
 

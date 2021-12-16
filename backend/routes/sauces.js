@@ -1,9 +1,8 @@
 import express from 'express';
 const router = express.Router();
 import * as saucesControllers from '../controllers/sauces.js';
-import * as saucesDataValidation from'../config/saucesDataValidation.js'
 import { auth } from '../controllers/auth.js';
-import multerConfig from '../config/multerConfig.js';
+import multerConfig from '../middlewares/multerConfig.js';
 
 
 
@@ -11,11 +10,11 @@ router.get('/', auth, saucesControllers.getAllSauces);
 
 router.get('/:id', auth, saucesControllers.getSauce);
 
-router.post('/', saucesDataValidation.sauceCheck, auth, multerConfig , saucesControllers.postSauce);
+router.post('/', auth, multerConfig, saucesControllers.postSauce);
 
-router.put('/:id', saucesDataValidation.sauceCheck, auth, multerConfig, saucesControllers.modifySauce);
+router.put('/:id', auth, multerConfig, saucesControllers.modifySauce);
 
-router.delete('/:id', auth, saucesControllers.deleteSauce);
+router.delete('/:id', saucesControllers.deleteSauce);
 
 // router.post('/:id/like', auth, saucesControllers.likeSauce);
 

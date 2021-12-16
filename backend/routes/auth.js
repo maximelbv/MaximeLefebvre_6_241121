@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import * as authControllers from '../controllers/auth.js';
-import * as authDataValidation from '../config/authDataValidation.js';
+import * as authDataValidation from '../middlewares/authDataValidation.js';
 
 
 router.post('/signup', authDataValidation.signupCheck, authControllers.signupPost);
