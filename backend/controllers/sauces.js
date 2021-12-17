@@ -37,7 +37,9 @@ export function postSauce(req, res) {
 
         const newSauce = new sauce({
             ...sauceObject,
-            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` 
+            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+            likes: 0,
+            dislikes: 0
         })
     
         return newSauce.save()
@@ -90,8 +92,14 @@ export function deleteSauce(req, res) {
     return sauce.findOne({ _id: req.params.id })
         .then(sauce => {
 
+            if (!sauce) {
+                return res.status(404).json({error: 'sauce non trouvée'});
+            } else if (sauce.userId !== req.auth.userId) {
+                return res.status(401).json({error: 'requête non autorisée'});
+            }
+
             const filename = sauce.imageUrl.split('/images/')[1];
-            
+
             fs.unlink(`images/${filename}`, () => {
                 return sauce.deleteOne({_id: req.params.id})
                     .then(() => res.status(200).json({message: 'sauce supprimée'}))
@@ -102,5 +110,28 @@ export function deleteSauce(req, res) {
         .catch(error => res.status(404).json({ error }));
 };
 
-// export function likeSauce(req, res) {};
+export function likeSauce(req, res) {
+    sauce.findOne({_id: req.params.id})
+        .then(sauce => {
+            let curentUser = req.body.userId;
+            let likedUsersList = sauce.usersLiked;
+
+            if (likedUsersList.indexOf(`${curentUser}`) !== -1) {
+                console.log('oui');
+                likedUsersList.pop(`${curentUser}`);
+                sauce.likes -= 1;            
+            } else {
+                console.log('non');
+                likedUsersList.push(curentUser);
+                sauce.likes += 1;    
+            }
+
+            console.log(likedUsersList);
+            console.log(sauce.likes);
+            return sauce.save()
+                .then(res.status(200).json({ message: 'Vote enregistré' }))
+                .catch()
+        })
+        .catch()
+};
 

@@ -14,8 +14,8 @@ router.post('/', auth, multerConfig, saucesControllers.postSauce);
 
 router.put('/:id', auth, multerConfig, saucesControllers.modifySauce);
 
-router.delete('/:id', saucesControllers.deleteSauce);
+router.delete('/:id', auth, saucesControllers.deleteSauce);
 
-// router.post('/:id/like', auth, saucesControllers.likeSauce);
+router.post('/:id/like', auth, saucesControllers.likeSauce);
 
 export default router;
