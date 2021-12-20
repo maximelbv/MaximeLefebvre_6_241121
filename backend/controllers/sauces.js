@@ -1,7 +1,12 @@
+// sauces model
 import sauce from '../models/sauce.js';
-// package 'file system' de node
+// Node.js 'file system' package
 import fs from 'fs';
 
+// functions added to the sauce routers
+
+
+// get all sauces
 export function getAllSauces(req, res) {
 
     return sauce.find()
@@ -11,6 +16,7 @@ export function getAllSauces(req, res) {
 
 };
 
+// get a specific sauce
 export function getSauce(req, res) {
     
     return sauce.findOne({_id: req.params.id})
@@ -19,10 +25,13 @@ export function getSauce(req, res) {
     ;
 };
 
+// post a sauce
 export function postSauce(req, res) {
     
+    // parse the request
     const sauceObject = JSON.parse(req.body.sauce);
 
+    // check conditions
     if (!sauceObject.name || sauceObject.name.length < 3 || sauceObject.name.length > 20) {
         throw 'Le nom doit comporter entre 3 et 20 caractères'
     } else if (!sauceObject.manufacturer ||sauceObject.manufacturer.length < 3 || sauceObject.manufacturer.length > 20) {
@@ -37,6 +46,7 @@ export function postSauce(req, res) {
     
     try {
 
+        // define the const 'newSauce' as a new 'sauce' model with the parsed data recieved
         const newSauce = new sauce({
             ...sauceObject,
             imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
@@ -44,6 +54,7 @@ export function postSauce(req, res) {
             dislikes: 0
         })
     
+        // save the sauce to the database
         return newSauce.save()
             .then(() => res.status(201).json({message: 'La sauce a bien été créée'}))
             .catch((error) => res.status(400).json({ error }))
@@ -56,8 +67,10 @@ export function postSauce(req, res) {
 
 };
 
+// modify a sauce
 export function modifySauce(req, res) {
 
+    // check conditions
     if (!req.body.name || req.body.name.length < 3 || req.body.name.length > 20) {
         throw 'Le nom doit comporter entre 3 et 20 caractères'
     } else if (!req.body.manufacturer ||req.body.manufacturer.length < 3 || req.body.manufacturer.length > 20) {
@@ -72,12 +85,15 @@ export function modifySauce(req, res) {
     
     try {
 
+        // is there a file in the request ?
         const sauceObject = req.file ? 
         { 
+            // if yes : modify the sauce according to the request + the 'imageUrl' according to the filename
             ...JSON.parse(req.body.sauce),
             imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        } : { ...req.body };
+        } : { ...req.body }; // if not: modify the sauce according to the request
     
+        // update the sauce in the database
         return sauce.updateOne({_id: req.params.id}, {...sauceObject, id: req.params.id})
             .then(() => res.status(200).json({message: 'sauce modifiée'}))
             .catch(error => res.status(400).json({error}))
@@ -89,20 +105,26 @@ export function modifySauce(req, res) {
 
 };
 
+// delete a sauce
 export function deleteSauce(req, res) {
 
+    // find in the database the sauce that is displayed
     return sauce.findOne({ _id: req.params.id })
+        // then
         .then(sauce => {
-
+        
+            // check if this sauce exists and if the user has the right to delete it
             if (!sauce) {
                 return res.status(404).json({error: 'sauce non trouvée'});
             } else if (sauce.userId !== req.auth.userId) {
                 return res.status(401).json({error: 'requête non autorisée'});
             }
 
+            // take the image name
             const filename = sauce.imageUrl.split('/images/')[1];
-
+            // and unlink it from the images directory
             fs.unlink(`images/${filename}`, () => {
+                // then, delete the sauce
                 return sauce.deleteOne({_id: req.params.id})
                     .then(() => res.status(200).json({message: 'sauce supprimée'}))
                     .catch(error => res.status(404).json({error}))
@@ -112,16 +134,22 @@ export function deleteSauce(req, res) {
         .catch(error => res.status(404).json({ error }));
 };
 
+// like a sauce
 export function likeSauce(req, res) {
+
+    // find in the database the sauce that is displayed
     sauce.findOne({_id: req.params.id})
+        // then 
         .then(sauce => {
             let curentUser = req.body.userId;
             let likedUsersList = sauce.usersLiked;
 
+            // if the curent user's id is in the liked list, remove him from the list and decrement the likes counter
             if (likedUsersList.indexOf(`${curentUser}`) !== -1) {
                 console.log('oui');
                 likedUsersList.pop(`${curentUser}`);
-                sauce.likes -= 1;            
+                sauce.likes -= 1;     
+            // else, add the curent user's id in the liked list and increment the likes counter    
             } else {
                 console.log('non');
                 likedUsersList.push(curentUser);
@@ -130,6 +158,8 @@ export function likeSauce(req, res) {
 
             console.log(likedUsersList);
             console.log(sauce.likes);
+
+            // then, save the sauce in the database
             return sauce.save()
                 .then(res.status(200).json({ message: 'Vote enregistré' }))
                 .catch()

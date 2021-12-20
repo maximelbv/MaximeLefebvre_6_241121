@@ -1,3 +1,10 @@
+// const added to the login and signup routers. 
+// define conditions to the data sent by the user with the package express-validator
+// .withMessage() : message sent if the condition is not approved
+// .notEmpty() : check if the data is not empty
+// .isEmail() : check if the data is an email 
+// .matches() : check if the data matches the regex
+
 import { check } from 'express-validator';
 
 export const signupCheck = [

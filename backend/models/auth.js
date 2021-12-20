@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+// used to check the uniqueness of a data
 import uniqueValidator from 'mongoose-unique-validator';
 
 const userSchema = mongoose.Schema({
