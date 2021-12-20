@@ -1,13 +1,16 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
+import dotenv from 'dotenv'
 
 import authRoutes from './routes/auth.js';
 import saucesRoutes from './routes/sauces.js';
 
+dotenv.config();
+
 const app = express();
 
-mongoose.connect('mongodb+srv://Maximelbv:azer@piiquante.s8orz.mongodb.net/Piiquante?retryWrites=true&w=majority',
+mongoose.connect(process.env.DB_LINK,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie'))

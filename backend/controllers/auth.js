@@ -1,13 +1,14 @@
 // user model
 import user from '../models/auth.js';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv'
+
+dotenv.config();
 
 export function signupPost(req, res) {
-    console.log('auth body', req.body);
     const errors = validationResult(req);
-    console.log(errors)
 
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })
@@ -47,7 +48,7 @@ export function loginPost(req, res){
                         userId: user._id,
                         token: jwt.sign(
                             {userId: user._id},
-                            'RANDOM_WEB_TOKEN',
+                            process.env.JWT_SECRET,
                             {expiresIn: '24h'}
                         )
                     });
@@ -59,11 +60,11 @@ export function loginPost(req, res){
     ;
 
 }
-// 1 fichier specifique pour cette fonction dans le dossier config ?
+
 export function auth(req, res, next){
     try {
         const token = req.headers.authorization.split(' ')[1];
-        const decodedToken = jwt.verify(token, 'RANDOM_WEB_TOKEN');
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decodedToken.userId;
         req.auth = { userId };
         if (req.body.userId && req.body.userId !== userId) {

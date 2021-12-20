@@ -3,10 +3,12 @@ import sauce from '../models/sauce.js';
 import fs from 'fs';
 
 export function getAllSauces(req, res) {
+
     return sauce.find()
-        .then(sauces => res.status(200).json(sauces))
+        .then(sauces => {res.status(200).json( sauces )})
         .catch(error => res.status(400).json({ error }))
     ;
+
 };
 
 export function getSauce(req, res) {
@@ -44,11 +46,11 @@ export function postSauce(req, res) {
     
         return newSauce.save()
             .then(() => res.status(201).json({message: 'La sauce a bien été créée'}))
-            .catch((err) => res.status(400).json({ error: err }))
+            .catch((error) => res.status(400).json({ error }))
         ;
 
-    } catch(err) {
-        return res.status(403).json({ err })
+    } catch(error) {
+        return res.status(403).json({ error })
     }
 
 
@@ -132,6 +134,8 @@ export function likeSauce(req, res) {
                 .then(res.status(200).json({ message: 'Vote enregistré' }))
                 .catch()
         })
-        .catch()
+        .catch(error => {
+            res.status(404).json({ error })
+        })
 };
 
