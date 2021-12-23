@@ -72,7 +72,7 @@ export function modifySauce(req, res) {
 
     // check conditions
     if (!req.body.name || req.body.name.length < 3 || req.body.name.length > 20) {
-        throw 'Le nom doit comporter entre 3 et 20 caractères'
+        throw new Error('Le nom doit comporter entre 3 et 20 caractères');
     } else if (!req.body.manufacturer ||req.body.manufacturer.length < 3 || req.body.manufacturer.length > 20) {
         throw 'Le nom du manufacturer doit comporter entre 3 et 20 cartactères'
     } else if (req.body.description.length > 300) {
@@ -141,28 +141,70 @@ export function likeSauce(req, res) {
     sauce.findOne({_id: req.params.id})
         // then 
         .then(sauce => {
-            let curentUser = req.body.userId;
+            let curentUserId = req.body.userId;
+            let userLikeState = req.body.like;
             let likedUsersList = sauce.usersLiked;
+            let dislikedUsersList = sauce.usersDisliked;
 
-            // if the curent user's id is in the liked list, remove him from the list and decrement the likes counter
-            if (likedUsersList.indexOf(`${curentUser}`) !== -1) {
-                console.log('oui');
-                likedUsersList.pop(`${curentUser}`);
-                sauce.likes -= 1;     
-            // else, add the curent user's id in the liked list and increment the likes counter    
-            } else {
-                console.log('non');
-                likedUsersList.push(curentUser);
-                sauce.likes += 1;    
+            // if the user dislike
+            if (userLikeState == -1) {
+                // & he liked before
+                if (likedUsersList.indexOf(`${curentUserId}`) !== -1) {
+                    sauce.likes -= 1;
+                    likedUsersList.pop(curentUserId);
+                    sauce.dislikes += 1;
+                    dislikedUsersList.push(curentUsertId);
+                }
+                // & he hasn't yet disliked
+                else if (dislikedUsersList.indexOf(`${curentUserId}`) == -1) {
+                    sauce.dislikes += 1;
+                    dislikedUsersList.push(curentUserId);
+                }
             }
 
-            console.log(likedUsersList);
-            console.log(sauce.likes);
+            // if the user remove his like / dislike
+            else if (userLikeState == 0) {
+
+                // if he removes his dislike
+                if (dislikedUsersList.indexOf(`${curentUserId}`) !== -1) {
+                    sauce.dislikes -= 1;
+                    dislikedUsersList.pop(curentUserId);
+                }
+                // if he remove his like
+                else if (likedUsersList.indexOf(`${curentUserId}`) !== -1) {
+                    sauce.likes -= 1;
+                    likedUsersList.pop(curentUserId);
+                }
+            }
+
+            // if the user like
+            else if (userLikeState == 1) {
+                // & he hasn't yet liked
+                if (likedUsersList.indexOf(`${curentUserId}`) == -1) {
+                    sauce.likes += 1;
+                    likedUsersList.push(curentUserId);
+                }
+                // & he disliked before
+                else if(dislikedUsersList.indexOf(`${curentUserId}`) !== -1) {
+                    sauce.dislikes -= 1;
+                    dislikedUsersList.pop(curentUserId);
+                    sauce.likes += 1;
+                    likedUsersList.push(curentUsertId);
+                }
+            }
+
+            // // test block : uncomment to see the results of the 'like / dislike' function 
+            // console.log('état du like de l\'user : ' + userLikeState);
+            // console.log('likes list : ' + likedUsersList);
+            // console.log('dislikes list : ' + dislikedUsersList);
+            // console.log('likes : ' + sauce.likes);
+            // console.log('dislikes : ' + sauce.dislikes);
+            // console.log('***********************************************')
 
             // then, save the sauce in the database
             return sauce.save()
                 .then(res.status(200).json({ message: 'Vote enregistré' }))
-                .catch()
+                .catch(error => {res.status(404).json({ error })})
         })
         .catch(error => {
             res.status(404).json({ error })
