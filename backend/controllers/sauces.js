@@ -70,19 +70,6 @@ export function postSauce(req, res) {
 // modify a sauce
 export function modifySauce(req, res) {
 
-    // check conditions
-    if (!req.body.name || req.body.name.length < 3 || req.body.name.length > 20) {
-        throw new Error('Le nom doit comporter entre 3 et 20 caractères');
-    } else if (!req.body.manufacturer ||req.body.manufacturer.length < 3 || req.body.manufacturer.length > 20) {
-        throw 'Le nom du manufacturer doit comporter entre 3 et 20 cartactères'
-    } else if (req.body.description.length > 300) {
-        throw 'La description est trop longue'
-    } else if (!req.body.mainPepper ||req.body.mainPepper.length < 3 || req.body.mainPepper.length > 20) {
-        throw 'Le piment principal doit comporter entre 3 et 20 caractères'
-    } else if (!req.body.heat) {
-        throw 'Mauvais format d\'intensité '
-    }
-    
     try {
 
         // is there a file in the request ?
@@ -193,13 +180,13 @@ export function likeSauce(req, res) {
                 }
             }
 
-            // // test block : uncomment to see the results of the 'like / dislike' function 
-            // console.log('état du like de l\'user : ' + userLikeState);
-            // console.log('likes list : ' + likedUsersList);
-            // console.log('dislikes list : ' + dislikedUsersList);
-            // console.log('likes : ' + sauce.likes);
-            // console.log('dislikes : ' + sauce.dislikes);
-            // console.log('***********************************************')
+            // test block : uncomment to see the results of the 'like / dislike' function 
+            console.log('état du like de l\'user : ' + userLikeState);
+            console.log('likes list : ' + likedUsersList);
+            console.log('dislikes list : ' + dislikedUsersList);
+            console.log('likes : ' + sauce.likes);
+            console.log('dislikes : ' + sauce.dislikes);
+            console.log('***********************************************')
 
             // then, save the sauce in the database
             return sauce.save()
