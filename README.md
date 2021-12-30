@@ -25,7 +25,11 @@ Pour installer le projet sur votre machine, suivez les instructions:
   cd backend
   npm install
   nodemon server
-  cd ..
+```
+
+- ouvrez un 2eme terminal à la racine du projet et entrez les commandes à la suite
+
+``` bash
   cd frontend
   npm install
   npm start
