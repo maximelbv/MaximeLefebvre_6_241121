@@ -180,14 +180,6 @@ export function likeSauce(req, res) {
                 }
             }
 
-            // test block : uncomment to see the results of the 'like / dislike' function 
-            console.log('état du like de l\'user : ' + userLikeState);
-            console.log('likes list : ' + likedUsersList);
-            console.log('dislikes list : ' + dislikedUsersList);
-            console.log('likes : ' + sauce.likes);
-            console.log('dislikes : ' + sauce.dislikes);
-            console.log('***********************************************')
-
             // then, save the sauce in the database
             return sauce.save()
                 .then(res.status(200).json({ message: 'Vote enregistré' }))
