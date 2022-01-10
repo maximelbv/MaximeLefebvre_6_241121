@@ -51,14 +51,14 @@ export function loginPost(req, res){
     return user.findOne({email: req.body.email})
         .then(user => {
             if (!user) {
-                return res.status(401).json({ error: 'Utilisateur non trouvé' })
+                return res.status(401).json({ error: 'Connexion impossible' })
             } 
             // then compare the password requested with the password of the account in the database
             return bcrypt.compare(req.body.password, user.password)
                 .then(valid => {
                     // if the passwords dont match, return an error message
                     if (!valid) {
-                        return res.status(401).json({ error: 'Mot de passe incorrect' })
+                        return res.status(401).json({ error: 'Connexion impossible' })
                     }
                     // else, return the user id + his token
                     return res.status(200).json({

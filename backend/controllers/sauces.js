@@ -51,7 +51,9 @@ export function postSauce(req, res) {
             ...sauceObject,
             imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
             likes: 0,
-            dislikes: 0
+            dislikes: 0,
+            usersLiked: [],
+            usersDisliked: []
         })
     
         // save the sauce to the database
@@ -69,26 +71,39 @@ export function postSauce(req, res) {
 
 // modify a sauce
 export function modifySauce(req, res) {
-
+    
     try {
 
-        // is there a file in the request ?
-        const sauceObject = req.file ? 
-        { 
-            // if yes : modify the sauce according to the request + the 'imageUrl' according to the filename
-            ...JSON.parse(req.body.sauce),
-            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        } : { ...req.body }; // if not: modify the sauce according to the request
-    
-        // update the sauce in the database
-        return sauce.updateOne({_id: req.params.id}, {...sauceObject, id: req.params.id})
-            .then(() => res.status(200).json({message: 'sauce modifiée'}))
-            .catch(error => res.status(400).json({error}))
-        ;
+        return sauce.findOne({ _id: req.params.id })
+        .then((displayedSauce) => {
 
+            if (!req.params.id) {
+                return res.status(404).json({error: 'sauce non trouvée'});
+            } else if (displayedSauce.userId !== req.auth.userId) {
+                return res.status(401).json({error: 'requête non autorisée'});
+            } 
+    
+            // is there a file in the request ?
+            const sauceObject = req.file ? 
+            { 
+                // if yes : modify the sauce according to the request + the 'imageUrl' according to the filename
+                ...JSON.parse(req.body.sauce),
+                imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+            } : { ...req.body }; // if not: modify the sauce according to the request
+        
+            // update the sauce in the database
+            return sauce.updateOne({_id: req.params.id}, {...sauceObject, id: req.params.id})
+                .then(() => res.status(200).json({message: 'sauce modifiée'}))
+                .catch(error => res.status(400).json({error}))
+            ;
+        })
+
+    
     } catch(err) {
         return res.status(403).json({ err })
     }
+    // })
+
 
 };
 
