@@ -1,5 +1,5 @@
 
-# PIIQUANTE 
+![image](https://user-images.githubusercontent.com/58565963/167068068-9254fa33-51ca-4f51-9aad-cdb782259c4b.png)
 
 6ème projet du parcours Développeur Web d'Open Classrooms
 
